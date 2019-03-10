@@ -18,11 +18,11 @@ Blog
             <a class="navbar-brand" href="/">Home</a>
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-               <li><a href="/">Home</a></li>
-            </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if is_login %}
+                {% if current_user %}
+                    <li>
+                        <a href="{{ url_for('main.user_profile', u_id=current_user.id) }}">Profile</a>
+                    </li>
                     <li><a href="{{ url_for('main.logout')}}">Sign Out</a></li>
                 {% else %}
                     <li><a href="{{ url_for('main.login')}}">Sign In</a></li>

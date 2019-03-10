@@ -1,4 +1,5 @@
 from . import Model
+import time
 from .role import Role, Permission
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,6 +10,10 @@ class User(Model):
         ('username', str, ''),
         ('password', str, ''),
         ('email', str, ''),
+        ('name', str, ''),
+        ('about', str, ''),
+        ('member_since', int, 0),
+        ('last_seen', int, 0),
         ('role_id', int, 0),
         ('permission', int, 0),
     ]
@@ -37,7 +42,8 @@ class User(Model):
         role = Role.find_by(default=True)
         form['role_id'] = role.id
         form['permission'] = role.permission
-        return cls.new(form)
+        u = cls.new(form)
+        return u._init_user()
 
     # 用户权限验证
     def can(self, permissions):
@@ -46,3 +52,29 @@ class User(Model):
 
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+
+    def _init_user(self):
+        form = {
+            'name': '工号' + str(self.id),
+            'about': '简单介绍下自己吧',
+            'member_since': self.ct,
+            'last_seen': self.ct,
+        }
+        return self.update(form)
+
+    def ping(self):
+        form = {
+            'last_seen': int(time.time())
+        }
+        self.update(form)
+
+    def time_info(self):
+        from ..utils import str_time
+        t = [
+            'Member since : {}.'.format(str_time(self.member_since)),
+            'Last seen : {}.'.format(str_time(self.last_seen, format_type=1))
+        ]
+        return t
+
+    def owner(self, u_id):
+        return self.id == u_id
