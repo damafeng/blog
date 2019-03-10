@@ -1,4 +1,5 @@
 from . import Model
+from .role import Role, Permission
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -8,13 +9,12 @@ class User(Model):
         ('username', str, ''),
         ('password', str, ''),
         ('email', str, ''),
+        ('role_id', int, 0),
+        ('permission', int, 0),
     ]
 
     @classmethod
     def login(cls, email, password, permanent=False):
-        print('email', email)
-        print('password', password)
-        print('permanent', permanent)
         u = cls.find_by(email=email)
         print('find u is ', u)
         if u is None:
@@ -34,4 +34,15 @@ class User(Model):
     @classmethod
     def register(cls, form):
         form['password'] = generate_password_hash(form['password'])
+        role = Role.find_by(default=True)
+        form['role_id'] = role.id
+        form['permission'] = role.permission
         return cls.new(form)
+
+    # 用户权限验证
+    def can(self, permissions):
+        return self.role_id != 0 and \
+               (self.permission & permissions) == permissions
+
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTER)

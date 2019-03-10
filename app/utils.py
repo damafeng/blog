@@ -1,5 +1,6 @@
-from flask import session, render_template
+from flask import session, render_template, abort
 from .models.user import User
+from functools import wraps
 
 
 def log(*args, **kwargs):
@@ -21,6 +22,20 @@ def current_user():
     """
     u_id = int(session.get('user_id', -1))
     return User.find_by(id=u_id)
+
+
+# 检查权限的装饰器
+def permission_required(permissions):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            log('permissions', permissions)
+            log('user_permission', current_user().permission)
+            if not current_user().can(permissions):
+                abort(404)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 
 def render_template_with_statue(*args, **kwargs):
