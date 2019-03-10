@@ -1,11 +1,11 @@
 from flask import Blueprint
 from ..models.role import Permission
-from ..utils import current_user, render_template_with_statue, require_login
+from ..utils import current_user
 
 
 main = Blueprint('main', __name__)
 
-from . import user, errors
+from . import user, errors, index
 
 
 # 通过上下文将Permission设为模板中全局可访问
@@ -28,9 +28,3 @@ def before_request():
     u = current_user()
     if u is not None:
         u.ping()
-
-
-@main.route('/')
-def index():
-    u = current_user()
-    return render_template_with_statue('index.html', user=u)

@@ -10,14 +10,19 @@
         {{ user.time_info()[1] }}
     </p>
 </div>
-{% if is_current_user %}
-    <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">
+
+{% if is_admin() %}
+    <a class="btn btn-danger" href="{{ url_for('admin.edit_profile', u_id=user.id) }}">
         Edit Profile
     </a>
+{% else %}
+    {% if is_current_user %}
+        <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">
+            Edit Profile
+        </a>
+    {% endif %}
 {% endif %}
-{% if is_admin() %}
-<a class="btn btn-danger" href="{{ url_for('admin.edit_profile', u_id=user.id) }}">
-    Edit Profile
-</a>
-{% endif %}
+
+<h3>{{ user.name }}的博客</h3>
+{% include '_posts.html' %}
 {% endblock %}

@@ -1,5 +1,5 @@
 import time
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING, DESCENDING
 
 client = MongoClient()
 db_name = 'db'
@@ -81,10 +81,10 @@ class Model:
         m.ct = t
         m.ut = t
         m.type = name.lower()
-        m.save()
+        m._insert_one()
         return m
 
-    def save(self):
+    def _insert_one(self):
         """增"""
         name = self.__class__.__name__
         db[name].insert_one(self.__dict__)
@@ -102,13 +102,22 @@ class Model:
         return cls._find_one(**kwargs)
 
     @classmethod
-    def find_all(cls, **kwargs):
+    def find_all(cls, sort=None, order='asc',
+                 page_size=0, page_no=0, **kwargs):
+        if order == 'des':
+            order = DESCENDING
+        else:
+            order = ASCENDING
+        kwargs['__sort'] = sort
+        kwargs['__order'] = order
+        kwargs['__page_size'] = page_size
+        kwargs['__page_no'] = page_no
         kwargs['delete'] = False
         return cls._find(**kwargs)
 
     @classmethod
-    def all(cls):
-        return cls.find_all()
+    def all(cls, sort=None, order='asc'):
+        return cls.find_all(sort=sort, order=order)
 
     @classmethod
     def _find_one(cls, **kwargs):
@@ -123,10 +132,22 @@ class Model:
     def _find(cls, **kwargs):
         name = cls.__name__
         flag_sort = '__sort'
+        flag_order = '__order'
+        flag_page_size = '__page_size'
+        flag_page_no = '__page_no'
         sort = kwargs.pop(flag_sort, None)
+        order = kwargs.pop(flag_order, None)
+        page_size = kwargs.pop(flag_page_size, 0)
+        page_no = kwargs.pop(flag_page_no, 0)
         ds = db[name].find(kwargs)
         if sort is not None:
-            ds.sort(sort)
+            if order is not None:
+                ds.sort(sort, order)
+            else:
+                ds.sort(sort)
+        if page_size != 0:
+            skip = page_size * (page_no - 1)
+            ds.limit(page_size).skip(skip)
         data_list = [cls._new_with_bson(d) for d in ds]
         return data_list
 
@@ -154,6 +175,11 @@ class Model:
                 '$set': update_form,
             }
             db[name].update_one(query, update_form)
+
+    def save(self):
+        form = self.__dict__.copy()
+        form.pop('_id')
+        self.update(form)
 
     def remove(self):
         value = {

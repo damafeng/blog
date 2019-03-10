@@ -1,7 +1,8 @@
-from flask import flash, redirect, url_for, abort, session
-from app.forms.login_form import LoginForm, EditProfileForm
-from ..forms.register_form import RegisterForm
+from flask import flash, redirect, url_for, abort, session, request
+from app.forms.user_form import LoginForm, RegisterForm
+from ..forms.edit_profile_form import EditProfileForm
 from ..models.user import User
+from ..models.post import Post
 from ..utils import render_template_with_statue, current_user, require_login
 from . import main
 
@@ -49,7 +50,12 @@ def user_profile(u_id):
         is_current_user = True
     else:
         is_current_user = False
-    return render_template_with_statue('user.html', user=user, is_current_user=is_current_user)
+    page = request.args.get('page', 1, type=int)
+    posts = Post.page_post(page=page, author_id=u_id)
+    return render_template_with_statue('user.html',
+                                       user=user,
+                                       is_current_user=is_current_user,
+                                       posts=posts)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -58,11 +64,9 @@ def edit_profile():
     user = current_user()
     form = EditProfileForm()
     if form.validate_on_submit():
-        update_form = {
-            'name': form.name.data,
-            'about': form.about.data,
-        }
-        user.update(update_form)
+        user.name = form.name.data
+        user.about = form.about.data
+        user.save()
         flash('资料更新完成')
         return redirect(url_for('.user_profile', u_id=user.id))
     form.name.data = user.name
