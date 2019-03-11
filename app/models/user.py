@@ -21,7 +21,6 @@ class User(Model):
     @classmethod
     def login(cls, email, password, permanent=False):
         u = cls.find_by(email=email)
-        print('find u is ', u)
         if u is None:
             return False
         elif check_password_hash(u.password, password):
