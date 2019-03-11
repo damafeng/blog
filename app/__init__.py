@@ -8,19 +8,25 @@ from flask_moment import Moment
 bootstrap = Bootstrap()
 moment = Moment()
 
-app = Flask(__name__)
-app.config.from_object(config['default'])
 
-bootstrap.init_app(app)
-moment.init_app(app)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(config['default'])
 
-app.register_blueprint(main_routes)
-app.register_blueprint(admin_routes, url_prefix='/admin')
+    bootstrap.init_app(app)
+    moment.init_app(app)
+
+    app.register_blueprint(main_routes)
+    app.register_blueprint(admin_routes, url_prefix='/admin')
+
+    return app
+
 
 if __name__ == '__main__':
-    config = dict(
+    d = dict(
         debug=True,
         host='localhost',
         port=2000,
     )
-    app.run(**config)
+    a = create_app()
+    a.run(**d)

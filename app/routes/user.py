@@ -3,6 +3,7 @@ from app.forms.user_form import LoginForm, RegisterForm
 from ..forms.edit_profile_form import EditProfileForm
 from ..models.user import User
 from ..models.post import Post
+from ..pagination import Pagination
 from ..utils import render_template_with_statue, current_user, require_login
 from . import main
 
@@ -50,12 +51,15 @@ def user_profile(u_id):
         is_current_user = True
     else:
         is_current_user = False
+    count = user.data_count(Post)
     page = request.args.get('page', 1, type=int)
-    posts = Post.page_post(page=page, author_id=u_id)
+    posts = Post.page_post(page=page, user_id=u_id)
+    pagination = Pagination.get_pagination(page, count)
     return render_template_with_statue('user.html',
                                        user=user,
                                        is_current_user=is_current_user,
-                                       posts=posts)
+                                       posts=posts,
+                                       pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

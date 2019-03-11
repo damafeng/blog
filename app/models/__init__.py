@@ -209,6 +209,15 @@ class Model:
         count = db[name].count_documents(query)
         return count
 
+    @classmethod
+    def count(cls):
+        name = cls.__name__
+        query = {
+            'delete': False,
+        }
+        count = db[name].count_documents(query)
+        return count
+
     def __repr__(self):
         name = self.__class__.__name__
         properties = ('{}={}'.format(k, v) for k, v in self.__dict__.items())
