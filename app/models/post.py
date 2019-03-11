@@ -22,7 +22,7 @@ class Post(Model):
                   order='des', page_size=10, **kwargs):
         posts = Post.find_all(sort, order,
                               page_size, page_no=page, **kwargs)
-        if len(posts) == 0:
+        if len(posts) == 0 and page != 1:
             abort(404)
         return posts
 

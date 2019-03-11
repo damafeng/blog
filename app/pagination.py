@@ -6,7 +6,12 @@ class Pagination:
 
     @staticmethod
     def get_pagination(page, count):
-        if count == 1:
+        page_count = count / 10
+        if page_count > (count//10):
+            count = int(page_count) + 1
+        else:
+            count = int(page_count)
+        if count in [0, 1]:
             pagination = None
         else:
             pagination = Pagination(page, count)
