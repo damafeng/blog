@@ -97,13 +97,14 @@ class Model:
         return m
 
     @classmethod
-    def find_by(cls, **kwargs):
-        kwargs['delete'] = False
+    def find_by(cls, all_data=False, **kwargs):
+        if not all_data:
+            kwargs['delete'] = False
         return cls._find_one(**kwargs)
 
     @classmethod
     def find_all(cls, sort=None, order='asc',
-                 page_size=0, page_no=0, **kwargs):
+                 page_size=0, page_no=0, all_data=False, **kwargs):
         if order == 'des':
             order = DESCENDING
         else:
@@ -112,7 +113,8 @@ class Model:
         kwargs['__order'] = order
         kwargs['__page_size'] = page_size
         kwargs['__page_no'] = page_no
-        kwargs['delete'] = False
+        if not all_data:
+            kwargs['delete'] = False
         return cls._find(**kwargs)
 
     @classmethod
@@ -174,12 +176,12 @@ class Model:
             update_form = {
                 '$set': update_form,
             }
-            db[name].update_one(query, update_form)
+            return db[name].update_one(query, update_form)
 
     def save(self):
         form = self.__dict__.copy()
         form.pop('_id')
-        self.update(form)
+        return self.update(form)
 
     def remove(self):
         value = {
@@ -210,11 +212,12 @@ class Model:
         return count
 
     @classmethod
-    def count(cls):
+    def count(cls, **kwargs):
         name = cls.__name__
         query = {
             'delete': False,
         }
+        query.update(kwargs)
         count = db[name].count_documents(query)
         return count
 

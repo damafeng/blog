@@ -1,6 +1,8 @@
 from . import Model
+from .follower import Follows
 import time
 from .role import Role, Permission
+from .post import Post
 from flask import session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -52,13 +54,17 @@ class User(Model):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
+    def followed(self, u_id):
+        return Follows.find_by(follower_id=self.id, followed_id=u_id)
+
     def _init_user(self):
         form = {
-            'name': '工号' + str(self.id),
+            'name': '用户' + str(self.id),
             'about': '简单介绍下自己吧',
             'member_since': self.ct,
             'last_seen': self.ct,
         }
+        Follows.change_follow(self.id, self.id)
         return self.update(form)
 
     def ping(self):
@@ -70,10 +76,26 @@ class User(Model):
     def time_info(self):
         from ..utils import str_time
         t = [
-            'Member since : {}.'.format(str_time(self.member_since)),
-            'Last seen : {}.'.format(str_time(self.last_seen, format_type=1))
+            '注册日期 : {}.'.format(str_time(self.member_since)),
+            '上次登录时间 : {}.'.format(str_time(self.last_seen, format_type=1))
         ]
         return t
 
     def owner(self, u_id):
         return self.id == u_id
+
+    def follower_count(self):
+        """该用户关注的人数量"""
+        return Follows.count(follower_id=self.id) - 1
+
+    def followed_count(self):
+        """该用户的关注者的数量"""
+        return Follows.count(followed_id=self.id) - 1
+
+    def followed_posts(self, page):
+        followers = Follows.find_all(follower_id=self.id)
+        p = []
+        for f in followers:
+            posts = Post.find_all(user_id=f.followed_id)
+            p.extend(posts)
+        return len(p), p[(page-1)*10:page*10-1]

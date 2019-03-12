@@ -14,21 +14,37 @@
 
 {% if is_admin() %}
     <a class="btn btn-danger" href="{{ url_for('admin.edit_profile', u_id=user.id) }}">
-        Edit Profile
+        修改信息
+    </a>
+    <a class="btn btn-info" href="#">
+        关注
     </a>
 {% else %}
     {% if is_current_user %}
         <a class="btn btn-default" href="{{ url_for('main.edit_profile') }}">
-            Edit Profile
+            修改信息
         </a>
+    {% else %}
+{% if current_user %}
+    <a class="btn btn-info" id="id-btn-follow" data-id="{{ user.id }}">
+        {%- if current_user.followed(user.id) -%}已
+        {%- endif -%}关注
+    </a>
+{% endif %}
     {% endif %}
 {% endif %}
-
+• {{user.follower_count()}}他关注的人
+• <span id="id_followed_count">{{user.followed_count()}}</span>关注他的人
 <h3>{{ user.name }}的博客</h3>
 {% include '_posts.html' %}
 {% if pagination %}
 <div class="pagination">
-    {{ macros.pagination_widget(pagination, 'main.user_profile', u_id=2)}}
+    {{ macros.pagination_widget(pagination, 'main.user_profile', u_id=user.id)}}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='follow.js')}}"></script>
 {% endblock %}

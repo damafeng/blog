@@ -7,9 +7,8 @@
 {% block page_content %}
 <div class="page-header">
     <h1>
-        Hello,
-        {% if current_user %}{{ current_user.name }}
-        {% else %} Stranger
+        {% if current_user %} 你好呀，{{ current_user.name }}，找个地方随便坐.
+        {% else %} 少侠且留步，且听我一言
         {% endif %}
     </h1>
 </div>
@@ -20,8 +19,15 @@
         {% endif %}
     {% endif %}
 </div>
-<br>
-{% include '_posts.html' %}
+<div class="post-tabs">
+    <ul class="nav nav-tabs">
+        <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('main.show_all') }}">所有</a></li>
+        {% if current_user %}
+        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('main.show_followed') }}">关注的人</a></li>
+        {% endif %}
+    </ul>
+    {% include '_posts.html' %}
+</div>
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, 'main.index')}}

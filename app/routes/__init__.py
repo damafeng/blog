@@ -5,7 +5,7 @@ from ..utils import current_user
 
 main = Blueprint('main', __name__)
 
-from . import user, errors, index
+from . import user, errors, index, post, follow
 
 
 # 通过上下文将Permission设为模板中全局可访问

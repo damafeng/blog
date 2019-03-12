@@ -13,9 +13,9 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if User.login(form.email.data, form.password.data, form.remember_me.data):
-            flash('Welcome, Login Succeed')
+            flash('欢迎来到我的酒馆')
             return redirect(session.get('next') or url_for('main.index'))
-        flash('Invalid email or password')
+        flash('邮箱或者密码错误')
     return render_template_with_statue('login.html', form=form)
 
 
@@ -36,7 +36,7 @@ def register():
             'password': form.password.data,
         }
         User.register(register_form)
-        flash('You Can now login. ')
+        flash('注册成功，可以登录了')
         return redirect(url_for('.login'))
     return render_template_with_statue('register.html', form=form)
 
@@ -76,3 +76,4 @@ def edit_profile():
     form.name.data = user.name
     form.about.data = user.about
     return render_template_with_statue('edit_profile.html', form=form)
+
