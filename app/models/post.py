@@ -17,12 +17,17 @@ class Post(Model):
         utc = datetime.datetime.utcfromtimestamp(self.ut)
         return utc
 
-    @staticmethod
-    def page_post(page, sort='ut',
+    @classmethod
+    def page_post(cls, page, sort='ut',
                   order='des', page_size=10, **kwargs):
-        posts = Post.find_all(sort, order,
-                              page_size=page_size, page_no=page, **kwargs)
+        posts = cls.find_all(sort, order,
+                             page_size=page_size, page_no=page, **kwargs)
         if len(posts) == 0 and page != 1:
             abort(404)
         return posts
+
+    def comments(self, page):
+        from app.models.comment import Comment
+        comments = Comment.page_post(page=page, post_id=self.id)
+        return comments
 

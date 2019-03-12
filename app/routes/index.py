@@ -30,7 +30,6 @@ def index():
         count = Post.count()
         posts = Post.page_post(page)
 
-    print(show_followed)
     pagination = Pagination.get_pagination(page, count)
     return render_template_with_statue('index.html',
                                        form=form, posts=posts,

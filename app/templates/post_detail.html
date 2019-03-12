@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
+{% import '_macros.html' as macros %}
 
 {% block title %}
 文章详情
@@ -17,10 +18,23 @@
     </span>
 </div>
 
-<div class="post-body">
+<div class="post-body page-header">
     <p style="word-wrap:break-word; ">
         {{ post.body }}
     </p>
 </div>
+<br>
+<h4 id="comments">评论</h4>
+{% if current_user %}
+<div class="comment-form">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endif %}
+{% include '_comments.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, 'main.post', p_id=post.id)}}
+</div>
+{% endif %}
 
 {% endblock %}
