@@ -1,21 +1,19 @@
-<ul class="list-group posts">
+<div class="posts">
     {% for post in posts %}
-    <li class="list-group-item post">
-        <div class="post-content">
-            <div style="float: right" class="post-date">
-                {{ moment(post.ut_to_utc()).fromNow() }}
-            </div>
-            <div class="post-author ">
-                <a href="{{ url_for('main.user_profile', u_id=post.get_author().id ) }}">
-                    {{ post.get_author().name }}
-                </a>
-            </div>
-            <a class="post_title text-area" href="{{ url_for('main.post', p_id=post.id) }}">
-                <p style="width: 80%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;margin-top: 10px;">
-                    {{ post.body }}
-                </p>
-            </a>
+    <div class="post on-list">
+        <h1 class="post-title"><a href="{{ url_for('main.post', p_id=post.id) }}">{{ post.title }}</a></h1>
+        <div class="post-meta">
+          <span class="post-date">
+            {{ post.get_ct_time() }}
+          </span>
+            <span class="post-author">— Written by
+                <a href="{{ url_for('main.user_profile', u_id=post.get_author().id) }}">{{ post.get_author().name }}</a>
+            </span>
         </div>
-    </li>
+        <div class="post-content">
+            {{ post.body }}
+        </div>
+        <div><a class="read-more button" href="{{ url_for('main.post', p_id=post.id) }}">Read more →</a></div>
+    </div>
     {% endfor %}
-</ul>
+</div>

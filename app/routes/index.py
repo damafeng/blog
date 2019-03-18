@@ -1,7 +1,5 @@
 from . import main
-from ..forms.post_form import PostForm
 from ..utils import current_user, render_template_with_statue, require_login
-from ..models.role import Permission
 from ..models.post import Post
 from ..pagination import Pagination
 from flask import redirect, url_for, request, make_response
@@ -9,17 +7,7 @@ from flask import redirect, url_for, request, make_response
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    form = PostForm()
     u = current_user()
-    if u is not None \
-            and u.can(Permission.WRITE) \
-            and form.validate_on_submit():
-        post = {
-            'body': form.body.data,
-            'user_id': u.id,
-        }
-        Post.new(post)
-        return redirect(url_for('main.index'))
     show_followed = False
     if u is not None:
         show_followed = bool(request.cookies.get('show_followed', ''))
@@ -32,7 +20,7 @@ def index():
 
     pagination = Pagination.get_pagination(page, count)
     return render_template_with_statue('index.html',
-                                       form=form, posts=posts,
+                                       posts=posts,
                                        pagination=pagination,
                                        show_followed=show_followed)
 

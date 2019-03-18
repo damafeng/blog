@@ -6,15 +6,16 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Login</h1>
-</div>
+<div class="content">
 <div class="col-md-4">
+    <h1>登录</h1>
+    <br>
+    <br>
     {{ wtf.quick_form(form) }}
     <h3>
         <a href="{{ url_for('main.register') }}" class="">注册新用户</a>
     </h3>
 </div>
-
+</div>
 
 {% endblock %}

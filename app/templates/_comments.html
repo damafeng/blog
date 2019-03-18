@@ -1,19 +1,19 @@
-<ul class="list-group comments">
+<div class="posts">
     {% for comment in comments %}
-    <li class="list-group-item comment">
-        <div class="comment-content">
-            <div style="float: right" class="comment-date">
-                {{ moment(comment.ut_to_utc()).fromNow() }}
-            </div>
-            <div class="comments-author ">
-                <a href="{{ url_for('main.user_profile', u_id=comment.get_author().id ) }}">
+    <div class="post on-list">
+        <div class="post-meta">
+          <span class="post-date">
+            {{ comment.get_ct_time(format_type=1) }}
+          </span>
+            <span class="post-author">— Written by
+                <a href="{{ url_for('main.user_profile', u_id=comment.get_author().id) }}">
                     {{ comment.get_author().name }}
                 </a>
-            </div>
-                <p style="word-wrap:break-word; ">
-                    {{ comment.body }}
-                </p>
+            </span>
         </div>
-    </li>
+        <div class="post-content">
+            {{ comment.body }}
+        </div>
+    </div>
     {% endfor %}
-</ul>
+</div>

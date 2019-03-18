@@ -14,7 +14,10 @@ def login():
     if form.validate_on_submit():
         if User.login(form.email.data, form.password.data, form.remember_me.data):
             flash('欢迎来到我的酒馆')
-            return redirect(session.get('next') or url_for('main.index'))
+            next_page = session.get('next') or url_for('main.index')
+            if session.get('next') is not None:
+                session.pop('next')
+            return redirect(next_page)
         flash('邮箱或者密码错误')
     return render_template_with_statue('login.html', form=form)
 

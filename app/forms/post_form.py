@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (
+    StringField,
     TextAreaField,
     SubmitField,
 )
@@ -7,5 +8,6 @@ from wtforms.validators import DataRequired
 
 
 class PostForm(FlaskForm):
-    body = TextAreaField("说点什么呗~", validators=[DataRequired()])
+    title = StringField('文章标题', validators=[DataRequired()])
+    body = TextAreaField("文章内容", validators=[DataRequired()])
     submit = SubmitField('提交')

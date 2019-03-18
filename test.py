@@ -27,6 +27,7 @@ def generate_fake_post(count=200):
         d = {
             'user_id': u.id,
             'body': forgery_py.lorem_ipsum.sentence(),
+            'title': forgery_py.lorem_ipsum.sentence(),
         }
         Post.new(d)
 
@@ -49,6 +50,6 @@ def generate_fake_comment(count=300):
 
 if __name__ == '__main__':
     # generate_fake_user(50)
-    # generate_fake_post(150)
-    generate_fake_comment()
+    generate_fake_post(150)
+    # generate_fake_comment()
 
